@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "LuccaDevises": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\boche\\source\\repos\\LuccaDevises\\LuccaDevises\\LuccaDevises\\File\\Input.txt"
+    }
+  }
+}
