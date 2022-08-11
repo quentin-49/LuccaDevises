@@ -4,7 +4,7 @@ using LuccaDevises.Service;
 
 try
 {
-    if (args.Length == 2)
+    if (args.Length != 1)
         throw new CommandLineException(Constant.CommandLineNumberError);
 
     new FileService().Exists(args[0]);

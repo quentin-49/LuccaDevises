@@ -8,11 +8,11 @@ namespace LuccaDevises.Service
     public class GraphService : IGraphService
     {
         public Graph Graph { get; set; }
-        private string PathFile { get; init; }
+        private string FilePath { get; init; }
 
-        public GraphService(string pathFile)
+        public GraphService(string filePath)
         {
-            PathFile = pathFile;
+            FilePath = filePath;
             Graph = Graph.GetInstance();
 
             GenerateGraph();
@@ -24,11 +24,11 @@ namespace LuccaDevises.Service
         /// <exception cref="IntegrationDataException"></exception>
         public void GenerateGraph()
         {
-            string[] linesFile = new FileService().ReadFiles(PathFile);
+            string[] linesFile = new FileService().ReadFiles(FilePath);
 
             var requestRegex = new Regex(Constant.RequestRegex);
-            var numberDeviceChangeRegex = new Regex(Constant.DeviceChangeNumberRegex);
-            var deviceChangeRegex = new Regex(Constant.DeviceChangeRegex);
+            var numberCurrencyChangeRegex = new Regex(Constant.CurrencyChangeNumberRegex);
+            var CurrencyChangeRegex = new Regex(Constant.CurrencyChangeRegex);
 
             foreach (string lineFile in linesFile)
             {
@@ -36,18 +36,18 @@ namespace LuccaDevises.Service
                 {
                     Graph.Request = new Request(lineFile);
                 }
-                else if (numberDeviceChangeRegex.IsMatch(lineFile))
+                else if (numberCurrencyChangeRegex.IsMatch(lineFile))
                 {
-                    Graph.DeviceNumber = Convert.ToInt32(lineFile);
+                    Graph.CurrencyNumber = Convert.ToInt32(lineFile);
                 }
-                else if (deviceChangeRegex.IsMatch(lineFile))
+                else if (CurrencyChangeRegex.IsMatch(lineFile))
                 {
-                    Graph.AddDeviceChange(lineFile);
+                    Graph.AddCurrencyChange(lineFile);
                 }
                 else
                     throw new IntegrationDataException(string.Format(Constant.NoMatchFormat, lineFile));
             }
-            Graph.GenerateListOfDevice();
+            Graph.GenerateCurrencies();
         }
 
         /// <summary>
@@ -56,10 +56,10 @@ namespace LuccaDevises.Service
         /// <returns></returns>
         public decimal CalculResult()
         {
-            Currency? point = Graph.GetStartedDevice();
+            Currency? point = Graph.GetStartedCurrency();
             do
             {
-                point = Graph.DeviceProcessing(point);
+                point = Graph.CurrencyProcessing(point);
 
             } while (point != null);
 

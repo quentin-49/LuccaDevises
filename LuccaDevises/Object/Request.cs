@@ -2,8 +2,8 @@
 {
     public record Request
     {
-        public string StartDevice { get; init; } = string.Empty;
-        public string EndDevice { get; init; } = string.Empty;
+        public string StartCurrency { get; init; } = string.Empty;
+        public string EndCurrency { get; init; } = string.Empty;
         public int Amount { get; init; }
         
         public Request()
@@ -14,9 +14,9 @@
         {
             string[] datas = data.Split(";");
 
-            StartDevice = datas[0];
+            StartCurrency = datas[0];
             Amount = Convert.ToInt32(datas[1]);
-            EndDevice = datas[2];
+            EndCurrency = datas[2];
         }
     }
 }

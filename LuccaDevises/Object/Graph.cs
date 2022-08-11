@@ -6,11 +6,11 @@ namespace LuccaDevises.Object
 {
     public sealed class Graph
     {
-        public List<CurrencyChange> DeviceChanges { get; set; }
-        public List<Currency> Devices { get; set; }
+        public List<CurrencyChange> CurrencyChanges { get; set; }
+        public List<Currency> Currencys { get; set; }
         public Request Request { get; set; }
         public List<Record> RecordList { get; set; }
-        public int DeviceNumber { get; set; }
+        public int CurrencyNumber { get; set; }
 
         private static Graph? _instance;
 
@@ -25,53 +25,53 @@ namespace LuccaDevises.Object
 
         public Graph()
         {
-            DeviceChanges = new List<CurrencyChange>();
-            Devices = new List<Currency>();
+            CurrencyChanges = new List<CurrencyChange>();
+            Currencys = new List<Currency>();
             RecordList = new List<Record>();
             Request = new Request();
         }
 
-        public void AddDeviceChange(string data)
+        public void AddCurrencyChange(string data)
         {
             string[] datas = data.Split(";");
 
             decimal.TryParse(datas[2], NumberStyles.Number, CultureInfo.InvariantCulture, out decimal dec);
 
-            AddDeviceChange(datas[0], datas[1], dec);
+            AddCurrencyChange(datas[0], datas[1], dec);
         }
 
-        private void AddDeviceChange(string startPoint, string endPoint, decimal weight)
+        private void AddCurrencyChange(string startPoint, string endPoint, decimal weight)
         {
-            DeviceChanges.AddDeviceChange(startPoint, endPoint, weight);
+            CurrencyChanges.AddCurrencyChange(startPoint, endPoint, weight);
         }
 
         /// <summary>
-        /// Gènene la liste des devices présentes dans la liste
+        /// Gènene la liste des Currencys présentes dans la liste
         /// </summary>
         /// <exception cref="IntegrationDataException"></exception>
-        public void GenerateListOfDevice()
+        public void GenerateCurrencies()
         {
-            if (DeviceNumber != DeviceChanges.Count())
-                throw new IntegrationDataException(Constant.IncoherentDeviceChanges);
+            if (CurrencyNumber != CurrencyChanges.Count)
+                throw new IntegrationDataException(Constant.IncoherentCurrencyChanges);
 
-            AddDevices(DeviceChanges);
+            AddCurrencys(CurrencyChanges);
         }
 
         /// <summary>
-        /// Génère les devices qui servirait de liste d'état.
+        /// Génère les Currencys qui servirait de liste d'état.
         /// </summary>
         /// <returns></returns>
-        public void AddDevices(List<CurrencyChange> deviceChangeList)
+        public void AddCurrencys(List<CurrencyChange> CurrencyChangeList)
         {
-            foreach (var point in deviceChangeList.Select(l => l.StartPoint).Union(deviceChangeList.Select(l => l.EndPoint)).Distinct().ToList())
+            foreach (var point in CurrencyChangeList.Select(l => l.StartPoint).Union(CurrencyChangeList.Select(l => l.EndPoint)).Distinct().ToList())
             {
-                Devices.Add(new Currency(point, null));
+                Currencys.Add(new Currency(point, null));
             }
         }
 
-        public Currency GetStartedDevice()
+        public Currency GetStartedCurrency()
         {
-            Currency p = Devices.First(p => p.Name == Request.StartDevice);
+            Currency p = Currencys.First(p => p.Name == Request.StartCurrency);
             p.Weight = 1;
             p.Marked = true;
             return p;
@@ -80,41 +80,41 @@ namespace LuccaDevises.Object
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="device"></param>
-        public Currency? DeviceProcessing(Currency device)
+        /// <param name="Currency"></param>
+        public Currency? CurrencyProcessing(Currency Currency)
         {
-            List<CurrencyChange> deviceChangeList = DeviceChanges.GetDeviceChangeFromName(device.Name);
+            List<CurrencyChange> CurrencyChangeList = CurrencyChanges.GetCurrencyChangeFromName(Currency.Name);
 
-            CalculDevice(device, deviceChangeList);
+            CalculCurrency(Currency, CurrencyChangeList);
 
-            device.Processed = true;
+            Currency.Processed = true;
 
-            RegisterRecord(device);
+            RegisterRecord(Currency);
 
-            return GetMinDevice();
+            return GetMinCurrency();
         }
 
         /// <summary>
-        /// Met à jour les devices approximité de celle passé en paramêtre
+        /// Met à jour les Currencys approximité de celle passé en paramêtre
         /// </summary>
-        /// <param name="device"></param>
-        /// <param name="deviceChangeList"></param>
-        private void CalculDevice(Currency device, List<CurrencyChange> deviceChangeList)
+        /// <param name="Currency"></param>
+        /// <param name="CurrencyChangeList"></param>
+        private void CalculCurrency(Currency Currency, List<CurrencyChange> CurrencyChangeList)
         {
-            foreach (var seg in deviceChangeList)
+            foreach (var seg in CurrencyChangeList)
             {
-                var deviceProcessing = Devices.FirstOrDefault(p => p.Name == seg.EndPoint && !p.Processed);
+                var CurrencyProcessing = Currencys.FirstOrDefault(p => p.Name == seg.EndPoint && !p.Processed);
 
-                if (deviceProcessing == null)
+                if (CurrencyProcessing == null)
                     continue;
 
-                if (deviceProcessing.Weight == null || deviceProcessing.Weight > device.Weight * seg.Weight)
+                if (CurrencyProcessing.Weight == null || CurrencyProcessing.Weight > Currency.Weight * seg.Weight)
                 {
-                    deviceProcessing.Weight = Math.Round((device.Weight ?? 1) * seg.Weight, 4);
-                    deviceProcessing.Predecessor = seg.StartPoint;
+                    CurrencyProcessing.Weight = Math.Round((Currency.Weight ?? 1) * seg.Weight, 4);
+                    CurrencyProcessing.Predecessor = seg.StartPoint;
                 }
 
-                deviceProcessing.Marked = true;
+                CurrencyProcessing.Marked = true;
             }
         }
 
@@ -124,10 +124,10 @@ namespace LuccaDevises.Object
         /// <returns></returns>
         public decimal GetResult()
         {
-            if (!RecordList.Any(r => r.StartPoint == Request.EndDevice))
+            if (!RecordList.Any(r => r.StartPoint == Request.EndCurrency))
                 throw new ResultException(Constant.NoResultCalculeted);
 
-            return RecordList.Where(r => r.StartPoint == Request.EndDevice).Select(r => Math.Ceiling(r.Weight * Request.Amount)).First();
+            return RecordList.Where(r => r.StartPoint == Request.EndCurrency).Select(r => Math.Ceiling(r.Weight * Request.Amount)).First();
         }
 
         /// <summary>
@@ -140,16 +140,16 @@ namespace LuccaDevises.Object
         }
 
         /// <summary>
-        /// Recherche la device calculé la plus faible
-        /// Device qui n'a pas encore été traité et qui dans le sous graph (device.Marked = 1)
+        /// Recherche la Currency calculé la plus faible
+        /// Currency qui n'a pas encore été traité et qui dans le sous graph (Currency.Marked = 1)
         /// </summary>
         /// <returns></returns>
-        private Currency? GetMinDevice()
+        private Currency? GetMinCurrency()
         {
-            if (!Devices.Any(pt => pt.Weight != 0 && !pt.Processed && pt.Marked))
+            if (!Currencys.Any(pt => pt.Weight != 0 && !pt.Processed && pt.Marked))
                 return null;
 
-            return Devices
+            return Currencys
                         .OrderBy(d => d.Weight)
                         .FirstOrDefault(d => d.Weight != 0
                             && d.Weight != null
