@@ -11,7 +11,7 @@
         public const string CurrencyChangeAlreadyExist = "Il existe déjà taux de change pour ces Currencys.";
         public const string IncoherentCurrencyChanges = "Nombre de taux de change incohérent";
         public const string CurrencyChangeNullError = "Impossible d'avoir un taux de change égale à zéro ou inférieur.";
-        public const string NoResultCalculeted = "Pas de résultat calculé car qu'il n'y a pas de lien entre la Currency de départ et celle d'arrivée.";
+        public const string NoResultCalculeted = "Pas de résultat calculé car qu'il n'y a pas de lien entre la devise de départ et celle d'arrivée.";
 
         #endregion
 
