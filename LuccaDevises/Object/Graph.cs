@@ -31,18 +31,17 @@ namespace LuccaDevises.Object
             Request = new Request();
         }
 
+        /// <summary>
+        /// Ajoute un taux de change à partir du fichier passé en paramêtre
+        /// </summary>
+        /// <param name="data"></param>
         public void AddCurrencyChange(string data)
         {
             string[] datas = data.Split(";");
 
             decimal.TryParse(datas[2], NumberStyles.Number, CultureInfo.InvariantCulture, out decimal dec);
 
-            AddCurrencyChange(datas[0], datas[1], dec);
-        }
-
-        private void AddCurrencyChange(string startPoint, string endPoint, decimal weight)
-        {
-            CurrencyChanges.AddCurrencyChange(startPoint, endPoint, weight);
+            CurrencyChanges.AddCurrencyChange(datas[0], datas[1], dec);
         }
 
         /// <summary>
@@ -69,6 +68,10 @@ namespace LuccaDevises.Object
             }
         }
 
+        /// <summary>
+        /// Récupère la devise de départ
+        /// </summary>
+        /// <returns></returns>
         public Currency GetStartedCurrency()
         {
             Currency p = Currencys.First(p => p.Name == Request.StartCurrency);
@@ -78,7 +81,7 @@ namespace LuccaDevises.Object
         }
 
         /// <summary>
-        /// 
+        /// Lance le processus de calcul des devises selon l'algorithme de Dijkstra
         /// </summary>
         /// <param name="Currency"></param>
         public Currency? CurrencyProcessing(Currency Currency)
@@ -140,7 +143,7 @@ namespace LuccaDevises.Object
         }
 
         /// <summary>
-        /// Recherche la Currency calculé la plus faible
+        /// Recherche la devise calculée la plus faible
         /// Currency qui n'a pas encore été traité et qui dans le sous graph (Currency.Marked = 1)
         /// </summary>
         /// <returns></returns>

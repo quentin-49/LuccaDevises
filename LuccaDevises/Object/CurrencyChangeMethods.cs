@@ -5,6 +5,14 @@ namespace LuccaDevises.Object
 {
     public static class CurrencyChangeMethods
     {
+        /// <summary>
+        /// Ajoute un taux de change
+        /// </summary>
+        /// <param name="CurrencyChanges"></param>
+        /// <param name="startPoint"></param>
+        /// <param name="endPoint"></param>
+        /// <param name="weight"></param>
+        /// <exception cref="IntegrationDataException"></exception>
         public static void AddCurrencyChange(this List<CurrencyChange> CurrencyChanges, string startPoint, string endPoint, decimal weight)
         {
             if (weight <= 0)
